@@ -79,12 +79,15 @@ public:
 
 		// Input handling
 
+		bool bPlayerMoving = false;
 		if (IsFocused()) {
 			if (GetKey(olc::LEFT).bHeld) {
 				fPlayerVelX += (bPlayerOnGround ? -10.0f : -4.0f) * fElapsedTime;
+				bPlayerMoving = true;
 			}
 			if (GetKey(olc::RIGHT).bHeld) {
 				fPlayerVelX += (bPlayerOnGround ? 10.0f : 4.0f) * fElapsedTime;
+				bPlayerMoving = true;
 			}
 			if (GetKey(olc::UP).bPressed) {
 				if (fPlayerVelY == 0)
@@ -96,7 +99,7 @@ public:
 
 		if (bPlayerOnGround) {
 			fPlayerVelX += -3.0f * fPlayerVelX * fElapsedTime;
-			if (fabs(fPlayerVelX) < 0.01f)
+			if (!bPlayerMoving && (fabs(fPlayerVelX) < 0.1f)) // stops if no input and too slow
 				fPlayerVelX = 0;
 		}
 
