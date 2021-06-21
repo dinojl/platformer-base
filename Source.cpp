@@ -28,6 +28,8 @@ private:
 	float fPlayerVelX = 0.0f;
 	float fPlayerVelY = 0.0f;
 
+	int coins = 0;
+
 	olc::vi2d playersize = { 16, 16 };
 
 	olc::Sprite* TileSheet = nullptr;
@@ -49,9 +51,9 @@ public:
 		sLevel += "....................................B?B.........................";
 		sLevel += "................................................................";
 		sLevel += ".....................o..........................................";
-		sLevel += "............#######.........##..................................";
-		sLevel += "...........###..............##..................................";
-		sLevel += "..........#####.................................................";
+		sLevel += "............#######.........##............BB....................";
+		sLevel += "...........###..............##...........BBBB...................";
+		sLevel += "..........#####.........................BBBBBB..................";
 		sLevel += "######################..###########.############################";
 		sLevel += "......................#.###########.#...........................";
 		sLevel += "......................#.............#...........................";
@@ -92,6 +94,9 @@ public:
 			if (GetKey(olc::UP).bPressed) {
 				if (fPlayerVelY == 0)
 					fPlayerVelY = -15;
+			}
+			if (GetKey(olc::F3).bPressed && GetKey(olc::CTRL).bHeld) { // dumbass cheat code TODO: remove before release
+				coins = 69420;
 			}
 		}
 
@@ -222,6 +227,8 @@ public:
 		olc::vi2d offset = {bPlayerDir ? 16 : 0, bPlayerOnGround ? 0 : 16};
 
 		DrawPartialSprite(playerpos, PlayerSprite, offset, playersize);
+
+		DrawString({ 0, 0 }, std::to_string(coins) + " coins");
 
 		return true;
 	}
