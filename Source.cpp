@@ -137,7 +137,7 @@ public:
 
 		bPlayerOnGround = false;
 		if (fPlayerVelY <= 0) {
-			if (GetTile(fNewPlayerPosX + 0.0f, fNewPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 0.0f, fNewPlayerPosY + 0.9f) != '.') {
+			if (GetTile(fNewPlayerPosX + 0.0f, fNewPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 0.9f, fNewPlayerPosY + 0.0f) != '.') {
 				fNewPlayerPosY = (int)fNewPlayerPosY + 1;
 				fPlayerVelY = 0;
 			}
