@@ -30,6 +30,12 @@ private:
 
 	int points = 0;
 
+	// jump vars + precomp
+	float fJumpTimer = 0.0;
+	float fJumpFloatTime = 0.1f;
+	float fJumpImpulse = 15.0f;
+	float fJumpPower = fJumpImpulse / fJumpFloatTime;
+
 	olc::vi2d TileSize = { 16, 16 };
 	int nTileWidth = TileSize.x;
 	int nTileHeight = TileSize.y;
@@ -44,6 +50,7 @@ public:
 		nLevelWidth = 64;
 		nLevelHeight = 16;
 
+		// TODO: Add level changing
 		sLevel += "................................................................";
 		sLevel += "................................................................";
 		sLevel += "................................................................";
@@ -109,10 +116,16 @@ public:
 				fPlayerVelX += (bPlayerOnGround ? 10.0f : 4.0f) * fElapsedTime;
 				bPlayerMoving = true;
 			}
-			if (GetKey(olc::UP).bPressed) { // TODO: add variable jump height based on hold length
-				if (fPlayerVelY == 0)
-					fPlayerVelY = -15;
+			if (GetKey(olc::UP).bHeld) {
+				if (fJumpTimer > 0 || bPlayerOnGround) {
+					fJumpTimer += fElapsedTime;
+					if (fJumpTimer < fJumpFloatTime) {
+						fPlayerVelY -= (20.0f * fElapsedTime) + fJumpPower * fElapsedTime;
+					}
+				}
 			}
+			else
+				fJumpTimer = 0.0f;  // reset jump timer
 			if (GetKey(olc::F3).bPressed && GetKey(olc::CTRL).bHeld) { // dumbass cheat code TODO: remove before release
 				points = 69420;
 			}
