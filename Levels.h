@@ -1,6 +1,6 @@
 #pragma once
 
-namespace lvls {
+namespace lvl {
 	struct Level {
 		Level(std::string cmap, int cwidth, int cheight, int cplayerX = 0, int cplayerY = 0, std::string cNextLevelID = "") {
 			map = cmap;

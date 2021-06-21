@@ -17,8 +17,8 @@ public:
 
 private:
 
-	lvls::Level CurrentLevel;
-	std::map<std::string, lvls::Level> Manifest = lvls::init();
+	lvl::Level CurrentLevel;
+	std::map<std::string, lvl::Level> Manifest = lvl::init();
 	bool bAdvanceLevel = false;
 
 	std::string sLevel;
@@ -56,7 +56,7 @@ private:
 	olc::Sprite* PlayerSprite = nullptr;
 
 	void LoadLevel(std::string ID) {
-		lvls::Level lvl = Manifest[ID];
+		lvl::Level lvl = Manifest[ID];
 		CurrentLevel = lvl;
 		sLevel = lvl.map;
 		nLevelWidth = lvl.width;
@@ -72,7 +72,7 @@ public:
 
 	bool OnUserCreate() override
 	{
-		lvls::init();
+		lvl::init();
 		LoadLevel("Start");
 
 		TileSheet = new olc::Sprite("assets/SpriteSheet.png");
