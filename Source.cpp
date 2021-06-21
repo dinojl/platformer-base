@@ -4,6 +4,9 @@
 #include "Levels.h"
 
 
+
+// TODO: add death traps
+
 class Example : public olc::PixelGameEngine
 {
 public:
@@ -37,7 +40,7 @@ private:
 	float fPlayerVelX = 0.0f;
 	float fPlayerVelY = 0.0f;
 
-	int points = 0;
+	int points = 0; // TODO: add countdown to loss based on score
 
 	// jump vars + precomp
 	float fJumpTimer = 0.0;
