@@ -28,7 +28,7 @@ private:
 	float fPlayerVelX = 0.0f;
 	float fPlayerVelY = 0.0f;
 
-	int coins = 0;
+	int points = 0;
 
 	olc::vi2d TileSize = { 16, 16 };
 	int nTileWidth = TileSize.x;
@@ -52,7 +52,7 @@ public:
 		sLevel += "................................................................";
 		sLevel += "....................................B?B.........................";
 		sLevel += "................................................................";
-		sLevel += ".....................o..........................................";
+		sLevel += ".....................o............................????????......";
 		sLevel += "............#######.........##............BB....................";
 		sLevel += "...........###..............##...........BBBB...................";
 		sLevel += "..........#####.........................BBBBBB..................";
@@ -80,6 +80,22 @@ public:
 			if (x >= 0 && x < nLevelWidth && y >= 0 && y < nLevelHeight)
 				sLevel[y * nLevelWidth + x] = c;
 		};
+		auto PickupHandler = [&](int x, int y, char side = ' ') {
+			switch (GetTile(x, y)) {
+			case 'o':
+				SetTile(x, y, '.');
+				points++;
+				break;
+			case '?':
+				if (side == 't') {
+					SetTile(x, y, 'B');
+					points += (rand() % 5 + 1) * 4;
+				}
+				break;
+			default:
+				break;
+			}
+		};
 
 		// Input handling
 
@@ -93,12 +109,12 @@ public:
 				fPlayerVelX += (bPlayerOnGround ? 10.0f : 4.0f) * fElapsedTime;
 				bPlayerMoving = true;
 			}
-			if (GetKey(olc::UP).bPressed) {
+			if (GetKey(olc::UP).bPressed) { // TODO: add variable jump height based on hold length
 				if (fPlayerVelY == 0)
 					fPlayerVelY = -15;
 			}
 			if (GetKey(olc::F3).bPressed && GetKey(olc::CTRL).bHeld) { // dumbass cheat code TODO: remove before release
-				coins = 69420;
+				points = 69420;
 			}
 		}
 
@@ -120,8 +136,16 @@ public:
 		if (fPlayerVelY < -100.0f)
 			fPlayerVelY = -100.0f;
 
+		// calc new player pos
 		float fNewPlayerPosX = fPlayerPosX + fPlayerVelX * fElapsedTime;
 		float fNewPlayerPosY = fPlayerPosY + fPlayerVelY * fElapsedTime;
+
+		// Handle coin pickups
+		PickupHandler((int)(fNewPlayerPosX + 0), (int)(fNewPlayerPosY + 0), 't');
+		PickupHandler((int)(fNewPlayerPosX + 0), (int)(fNewPlayerPosY + 1), 'b');
+		PickupHandler((int)(fNewPlayerPosX + 1), (int)(fNewPlayerPosY + 0), 't');
+		PickupHandler((int)(fNewPlayerPosX + 1), (int)(fNewPlayerPosY + 1), 'b');
+
 
 		// Collision detection
 		if (fPlayerVelX <= 0) {
@@ -234,7 +258,10 @@ public:
 
 		DrawPartialSprite(playerpos, PlayerSprite, offset, TileSize);
 
-		DrawString({ 0, 0 }, std::to_string(coins) + " coins");
+		if (points == 1)
+			DrawString({ 1, 1 }, std::to_string(points) + " point");
+		else
+			DrawString({ 1, 1 }, std::to_string(points) + " points");
 
 		return true;
 	}
