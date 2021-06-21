@@ -1,6 +1,8 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
+#include "Levels.h"
+
 
 class Example : public olc::PixelGameEngine
 {
@@ -11,6 +13,10 @@ public:
 	}
 
 private:
+
+	lvls::Level CurrentLevel;
+	std::map<std::string, lvls::Level> Manifest = lvls::init();
+	bool bAdvanceLevel = false;
 
 	std::string sLevel;
 	int nLevelWidth;
@@ -24,6 +30,9 @@ private:
 
 	float fPlayerPosX = 0.0f;
 	float fPlayerPosY = 0.0f;
+
+	float fNewPlayerPosX;
+	float fNewPlayerPosY;
 
 	float fPlayerVelX = 0.0f;
 	float fPlayerVelY = 0.0f;
@@ -43,30 +52,25 @@ private:
 	olc::Sprite* TileSheet = nullptr;
 	olc::Sprite* PlayerSprite = nullptr;
 
+	void LoadLevel(std::string ID) {
+		lvls::Level lvl = Manifest[ID];
+		CurrentLevel = lvl;
+		sLevel = lvl.map;
+		nLevelWidth = lvl.width;
+		nLevelHeight = lvl.height;
+		fPlayerVelX = 0.0f;
+		fPlayerVelY = 0.0f;
+		fPlayerPosX = lvl.playerX;
+		fPlayerPosY = lvl.playerY;
+		bAdvanceLevel = false;
+	}
+
 public:
 
 	bool OnUserCreate() override
 	{
-		nLevelWidth = 64;
-		nLevelHeight = 16;
-
-		// TODO: Add level changing
-		sLevel += "................................................................";
-		sLevel += "................................................................";
-		sLevel += "................................................................";
-		sLevel += "................................................................";
-		sLevel += "................................................................";
-		sLevel += "................................................................";
-		sLevel += "....................................B?B.........................";
-		sLevel += "................................................................";
-		sLevel += ".....................o............................????????......";
-		sLevel += "............#######.........##............BB....................";
-		sLevel += "...........###..............##...........BBBB...................";
-		sLevel += "..........#####.........................BBBBBB..................";
-		sLevel += "######################..###########.############################";
-		sLevel += "......................#.###########.#...........................";
-		sLevel += "......................#.............#...........................";
-		sLevel += "......................#######..######...........................";
+		lvls::init();
+		LoadLevel("Start");
 
 		TileSheet = new olc::Sprite("assets/SpriteSheet.png");
 		PlayerSprite = new olc::Sprite("assets/PlayerSprite.png");
@@ -98,6 +102,9 @@ public:
 					SetTile(x, y, 'B');
 					points += (rand() % 5 + 1) * 4;
 				}
+				break;
+			case 'l':
+				bAdvanceLevel = true;
 				break;
 			default:
 				break;
@@ -249,6 +256,8 @@ public:
 					DrawPartialSprite({ (int)(x * nTileWidth - fTileOffsetX), (int)(y * nTileHeight - fTileOffsetY) }, TileSheet, { nTileWidth * 3, 0 }, TileSize);
 					break;
 
+				case 'l': // TODO: make level exit sprite
+					DrawRect({ (int)(x * nTileWidth - fTileOffsetX), (int)(y * nTileHeight - fTileOffsetY) }, { nTileWidth, nTileHeight }, olc::DARK_MAGENTA);
 				default:
 					break;
 				}
@@ -275,6 +284,11 @@ public:
 			DrawString({ 1, 1 }, std::to_string(points) + " point");
 		else
 			DrawString({ 1, 1 }, std::to_string(points) + " points");
+
+
+		if(bAdvanceLevel)
+			LoadLevel(CurrentLevel.NextLevelID);
+		
 
 		return true;
 	}
