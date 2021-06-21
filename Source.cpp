@@ -30,7 +30,9 @@ private:
 
 	int coins = 0;
 
-	olc::vi2d playersize = { 16, 16 };
+	olc::vi2d TileSize = { 16, 16 };
+	int nTileWidth = TileSize.x;
+	int nTileHeight = TileSize.y;
 
 	olc::Sprite* TileSheet = nullptr;
 	olc::Sprite* PlayerSprite = nullptr;
@@ -164,8 +166,7 @@ public:
 
 
 		// Draw level
-		int nTileWidth = 16;
-		int nTileHeight = 16;
+		
 		int nVisibleTilesX = ScreenWidth() / nTileWidth;
 		int nVisibleTilesY = ScreenHeight() / nTileHeight;
 
@@ -231,7 +232,7 @@ public:
 
 		olc::vi2d offset = {bPlayerDir ? 16 : 0, bPlayerOnGround ? 0 : 16};
 
-		DrawPartialSprite(playerpos, PlayerSprite, offset, playersize);
+		DrawPartialSprite(playerpos, PlayerSprite, offset, TileSize);
 
 		DrawString({ 0, 0 }, std::to_string(coins) + " coins");
 
