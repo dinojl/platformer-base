@@ -68,8 +68,8 @@ public:
 		sLevel += "......................#.............#...........................";
 		sLevel += "......................#######..######...........................";
 
-		TileSheet = new olc::Sprite("gfx/SpriteSheet.png");
-		PlayerSprite = new olc::Sprite("gfx/PlayerSprite.png");
+		TileSheet = new olc::Sprite("assets/SpriteSheet.png");
+		PlayerSprite = new olc::Sprite("assets/PlayerSprite.png");
 
 		return true;
 	}
@@ -189,7 +189,7 @@ public:
 			}
 		}
 
-		if (fNewPlayerPosX < 0.0f) { // resolve small oob bug on left border
+		if (fNewPlayerPosX < 0.0f) { // resolves small oob bug on left border
 			fNewPlayerPosX = 0.0f;
 			fPlayerVelX = 0.0f;
 		}
