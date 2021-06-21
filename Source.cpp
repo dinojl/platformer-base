@@ -150,6 +150,11 @@ public:
 			}
 		}
 
+		if (fNewPlayerPosX < 0.0f) { // resolve small oob bug on left border
+			fNewPlayerPosX = 0.0f;
+			fPlayerVelX = 0.0f;
+		}
+
 		fPlayerPosX = fNewPlayerPosX;
 		fPlayerPosY = fNewPlayerPosY;
 
