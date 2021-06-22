@@ -28,6 +28,7 @@ private:
 	bool bPlayerOnGround = false;
 	bool bPlayerDir = true;
 	bool bPlayerAlive = true;
+	float fDeathTimer = 0.0f;
 
 	float fCameraPosX = 0.0f;
 	float fCameraPosY = 0.0f;
@@ -111,6 +112,11 @@ public:
 			case 'l':
 				bAdvanceLevel = true;
 				break;
+			case 'x':
+				bPlayerAlive = false;
+				fPlayerVelY = -15;
+				fPlayerVelX = 0;
+				break;
 			default:
 				break;
 			}
@@ -119,7 +125,7 @@ public:
 		// Input handling
 
 		bool bPlayerMoving = false;
-		if (IsFocused()) {
+		if (IsFocused() && bPlayerAlive) {
 			if (GetKey(olc::LEFT).bHeld) {
 				fPlayerVelX += (bPlayerOnGround ? -10.0f : -4.0f) * fElapsedTime;
 				bPlayerMoving = true;
@@ -165,39 +171,41 @@ public:
 		float fNewPlayerPosX = fPlayerPosX + fPlayerVelX * fElapsedTime;
 		float fNewPlayerPosY = fPlayerPosY + fPlayerVelY * fElapsedTime;
 
-		// Handle coin pickups
-		PickupHandler((int)(fNewPlayerPosX + 0), (int)(fNewPlayerPosY + 0), 't');
-		PickupHandler((int)(fNewPlayerPosX + 0), (int)(fNewPlayerPosY + 1), 'b');
-		PickupHandler((int)(fNewPlayerPosX + 1), (int)(fNewPlayerPosY + 0), 't');
-		PickupHandler((int)(fNewPlayerPosX + 1), (int)(fNewPlayerPosY + 1), 'b');
+		if (bPlayerAlive) { // noclip if dead
+			// Handle coin pickups
+			PickupHandler((int)(fNewPlayerPosX + 0), (int)(fNewPlayerPosY + 0), 't');
+			PickupHandler((int)(fNewPlayerPosX + 0), (int)(fNewPlayerPosY + 1), 'b');
+			PickupHandler((int)(fNewPlayerPosX + 1), (int)(fNewPlayerPosY + 0), 't');
+			PickupHandler((int)(fNewPlayerPosX + 1), (int)(fNewPlayerPosY + 1), 'b');
 
 
-		// Collision detection
-		if (fPlayerVelX <= 0) {
-			if (GetTile(fNewPlayerPosX + 0.0f, fPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 0.0f, fPlayerPosY + 0.9f) != '.') {
-				fNewPlayerPosX = (int)fNewPlayerPosX + 1;
-				fPlayerVelX = 0;
+			// Collision detection
+			if (fPlayerVelX <= 0) {
+				if (GetTile(fNewPlayerPosX + 0.0f, fPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 0.0f, fPlayerPosY + 0.9f) != '.') {
+					fNewPlayerPosX = (int)fNewPlayerPosX + 1;
+					fPlayerVelX = 0;
+				}
 			}
-		}
-		else {
-			if (GetTile(fNewPlayerPosX + 1.0f, fPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 1.0f, fPlayerPosY + 0.9f) != '.') {
-				fNewPlayerPosX = (int)fNewPlayerPosX;
-				fPlayerVelX = 0;
+			else {
+				if (GetTile(fNewPlayerPosX + 1.0f, fPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 1.0f, fPlayerPosY + 0.9f) != '.') {
+					fNewPlayerPosX = (int)fNewPlayerPosX;
+					fPlayerVelX = 0;
+				}
 			}
-		}
 
-		bPlayerOnGround = false;
-		if (fPlayerVelY <= 0) {
-			if (GetTile(fNewPlayerPosX + 0.0f, fNewPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 0.9f, fNewPlayerPosY + 0.0f) != '.') {
-				fNewPlayerPosY = (int)fNewPlayerPosY + 1;
-				fPlayerVelY = 0;
+			bPlayerOnGround = false;
+			if (fPlayerVelY <= 0) {
+				if (GetTile(fNewPlayerPosX + 0.0f, fNewPlayerPosY + 0.0f) != '.' || GetTile(fNewPlayerPosX + 0.9f, fNewPlayerPosY + 0.0f) != '.') {
+					fNewPlayerPosY = (int)fNewPlayerPosY + 1;
+					fPlayerVelY = 0;
+				}
 			}
-		}
-		else {
-			if (GetTile(fNewPlayerPosX + 0.0f, fNewPlayerPosY + 1.0f) != '.' || GetTile(fNewPlayerPosX + 0.9f, fNewPlayerPosY + 1.0f) != '.') {
-				fNewPlayerPosY = (int)fNewPlayerPosY;
-				fPlayerVelY = 0;
-				bPlayerOnGround = true;
+			else {
+				if (GetTile(fNewPlayerPosX + 0.0f, fNewPlayerPosY + 1.0f) != '.' || GetTile(fNewPlayerPosX + 0.9f, fNewPlayerPosY + 1.0f) != '.') {
+					fNewPlayerPosY = (int)fNewPlayerPosY;
+					fPlayerVelY = 0;
+					bPlayerOnGround = true;
+				}
 			}
 		}
 
@@ -291,9 +299,28 @@ public:
 			DrawString({ 1, 1 }, std::to_string(points) + " points");
 
 
-		if(bAdvanceLevel)
+		if(bAdvanceLevel && bPlayerAlive)
 			LoadLevel(CurrentLevel.sNextLevelID);
 		
+		if (!bPlayerAlive) {
+			// Draw game over box
+			FillRect({ ScreenWidth() / 4, ScreenHeight() / 4 }, { ScreenWidth() / 2, ScreenHeight() / 2 }, olc::GREY);
+			DrawRect({ ScreenWidth() / 4, ScreenHeight() / 4 }, { ScreenWidth() / 2, ScreenHeight() / 2 }, olc::BLACK);
+
+			DrawString({ ScreenWidth() / 2 - 36, ScreenHeight() / 2 - 4 }, "Game Over", olc::BLACK);
+			DrawString({ ScreenWidth() / 2 - 4, ScreenHeight() / 2 + 5 }, std::to_string(5 - (int)(fDeathTimer)), olc::BLACK);
+
+			// Start game over timer
+			fDeathTimer += fElapsedTime;
+		}
+
+		if (fDeathTimer >= 5.0f) {
+			// Restart after death
+			bPlayerAlive = true;
+			points = 0;
+			fDeathTimer = 0.0f;
+			LoadLevel("Start");
+		}
 
 		return true;
 	}
