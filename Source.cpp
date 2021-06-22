@@ -54,8 +54,8 @@ private:
 	int nTileWidth = TileSize.x;
 	int nTileHeight = TileSize.y;
 
-	olc::Sprite* TileSheet = nullptr;
-	olc::Sprite* PlayerSprite = nullptr;
+	olc::Renderable* TileSheet = nullptr;
+	olc::Renderable* PlayerSprite = nullptr;
 
 	void LoadLevel(std::string ID) {
 		lvl::Level lvl = Manifest[ID];
@@ -78,8 +78,10 @@ public:
 		lvl::init();
 		LoadLevel("Start");
 
-		TileSheet = new olc::Sprite("assets/SpriteSheet.png");
-		PlayerSprite = new olc::Sprite("assets/PlayerSprite.png");
+		TileSheet = new olc::Renderable();
+		TileSheet->Load("assets/SpriteSheet.png");
+		PlayerSprite = new olc::Renderable();
+		PlayerSprite->Load("assets/PlayerSprite.png");
 
 		return true;
 	}
@@ -254,19 +256,23 @@ public:
 					break;
 
 				case '#': // Ground
-					DrawPartialSprite({ (int)(x * nTileWidth - fTileOffsetX), (int)(y * nTileHeight - fTileOffsetY) }, TileSheet, { nTileWidth * 0, 0 }, TileSize);
+					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+						{ (float)nTileWidth * 0, 0 }, TileSize);
 					break;
 
 				case 'B': // Brick
-					DrawPartialSprite({ (int)(x * nTileWidth - fTileOffsetX), (int)(y * nTileHeight - fTileOffsetY) }, TileSheet, { nTileWidth * 1, 0 }, TileSize);
+					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+						{ (float)nTileWidth * 1, 0 }, TileSize);
 					break;
 
 				case 'o': // coin
-					DrawPartialSprite({ (int)(x * nTileWidth - fTileOffsetX), (int)(y * nTileHeight - fTileOffsetY) }, TileSheet, { nTileWidth * 2, 0 }, TileSize);
+					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+						{ (float)nTileWidth * 2, 0 }, TileSize);
 					break;
 
 				case '?': // ?box
-					DrawPartialSprite({ (int)(x * nTileWidth - fTileOffsetX), (int)(y * nTileHeight - fTileOffsetY) }, TileSheet, { nTileWidth * 3, 0 }, TileSize);
+					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+						{ (float)nTileWidth * 3, 0 }, TileSize);
 					break;
 
 				case 'l': // TODO: make level exit sprite
@@ -291,7 +297,7 @@ public:
 
 		olc::vi2d offset = {bPlayerDir ? 16 : 0, bPlayerOnGround ? 0 : 16};
 
-		DrawPartialSprite(playerpos, PlayerSprite, offset, TileSize);
+		DrawPartialDecal(playerpos, TileSize, PlayerSprite->Decal(), offset, TileSize);
 
 		if (points == 1)
 			DrawString({ 1, 1 }, std::to_string(points) + " point");
