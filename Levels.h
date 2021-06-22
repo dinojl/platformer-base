@@ -2,21 +2,23 @@
 
 namespace lvl {
 	struct Level {
-		Level(std::string cmap, int cwidth, int cheight, int cplayerX = 0, int cplayerY = 0, std::string cNextLevelID = "") {
-			map = cmap;
-			width = cwidth;
-			height = cheight;
-			playerX = cplayerX;
-			playerY = cplayerY;
-			NextLevelID = cNextLevelID;
+		Level(std::string Map, int Width, int Height, int PlayerX = 0, int PlayerY = 0, bool PlayerDir = true, std::string NextLevelID = "") {
+			sMap = Map;
+			nWidth = Width;
+			nHeight = Height;
+			nPlayerX = PlayerX;
+			nPlayerY = PlayerY;
+			bPlayerDir = PlayerDir;
+			sNextLevelID = NextLevelID;
 		}
 		Level() {}
-		std::string map = "";
-		int width = 0;
-		int height = 0;
-		int playerX = 0;
-		int playerY = 0;
-		std::string NextLevelID = "";
+		std::string sMap = "";
+		int nWidth = 0;
+		int nHeight = 0;
+		int nPlayerX = 0;
+		int nPlayerY = 0;
+		bool bPlayerDir = true;
+		std::string sNextLevelID = "";
 	};
 
 	
@@ -42,7 +44,7 @@ namespace lvl {
 			"######################..###########.############################"
 			"......................#.###########.#..........................."
 			"......................#.............#..........................."
-			"......................#######..######..........................."), 64, 16, 1, 1, "Start")));
+			"......................#######..######..........................."), 64, 16, 1, 1, true, "Start")));
 
 		// Start
 		Manifest.insert(std::pair<std::string, Level>("Start", Level((
@@ -65,7 +67,7 @@ namespace lvl {
 			"###############################################################"
 			"..............................................................."
 			"..............................................................."
-			"..............................................................."), 63, 20, 1, 1, "Brickworld")));
+			"..............................................................."), 63, 20, 1, 1, true, "Brickworld")));
 
 		// Brickworld
 		Manifest.insert(std::pair<std::string, Level>("Brickworld", Level((
@@ -88,7 +90,7 @@ namespace lvl {
 			"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 			"..............................................................."
 			"..............................................................."
-			"..............................................................."), 63, 20, 1, 1, "Debug")));
+			"..............................................................."), 63, 20, 1, 1, true, "Debug")));
 
 
 

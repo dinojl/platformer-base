@@ -27,6 +27,7 @@ private:
 
 	bool bPlayerOnGround = false;
 	bool bPlayerDir = true;
+	bool bPlayerAlive = true;
 
 	float fCameraPosX = 0.0f;
 	float fCameraPosY = 0.0f;
@@ -58,13 +59,14 @@ private:
 	void LoadLevel(std::string ID) {
 		lvl::Level lvl = Manifest[ID];
 		CurrentLevel = lvl;
-		sLevel = lvl.map;
-		nLevelWidth = lvl.width;
-		nLevelHeight = lvl.height;
+		sLevel = lvl.sMap;
+		nLevelWidth = lvl.nWidth;
+		nLevelHeight = lvl.nHeight;
 		fPlayerVelX = 0.0f;
 		fPlayerVelY = 0.0f;
-		fPlayerPosX = lvl.playerX;
-		fPlayerPosY = lvl.playerY;
+		fPlayerPosX = lvl.nPlayerX;
+		fPlayerPosY = lvl.nPlayerY;
+		bPlayerDir = lvl.bPlayerDir;
 		bAdvanceLevel = false;
 	}
 
@@ -290,7 +292,7 @@ public:
 
 
 		if(bAdvanceLevel)
-			LoadLevel(CurrentLevel.NextLevelID);
+			LoadLevel(CurrentLevel.sNextLevelID);
 		
 
 		return true;
