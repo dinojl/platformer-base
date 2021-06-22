@@ -42,7 +42,8 @@ private:
 	float fPlayerVelX = 0.0f;
 	float fPlayerVelY = 0.0f;
 
-	int points = 0; // TODO: add countdown to loss based on score
+	int nStartingPoints = 30;
+	int nPoints = nStartingPoints; // TODO: add countdown to loss based on score
 
 	// jump vars + precomp
 	float fJumpTimer = 0.0;
@@ -101,20 +102,21 @@ public:
 		};
 		auto PickupHandler = [&](int x, int y, char side = ' ') {
 			switch (GetTile(x, y)) {
-			case 'o':
+			case 'o':  // Coin pickup
 				SetTile(x, y, '.');
-				points++;
+				nPoints += 5;
 				break;
-			case '?':
+			case '?':  // ?box pickup
 				if (side == 't') {
 					SetTile(x, y, 'B');
-					points += (rand() % 5 + 1) * 4;
+					nPoints += (rand() % 10 + 1) * 4;
 				}
 				break;
-			case 'l':
+			case 'l':  // Level advance
+			case 'L':
 				bAdvanceLevel = true;
 				break;
-			case 'x':
+			case 'x':  // Killbox
 				bPlayerAlive = false;
 				fPlayerVelY = -15;
 				fPlayerVelX = 0;
@@ -147,7 +149,7 @@ public:
 			else
 				fJumpTimer = 0.0f;  // reset jump timer
 			if (GetKey(olc::F3).bPressed && GetKey(olc::CTRL).bHeld) { // dumbass cheat code TODO: remove before release
-				points = 69420;
+				nPoints = 69420;
 			}
 		}
 
@@ -242,6 +244,8 @@ public:
 		float fTileOffsetX = (fOffsetX - (int)fOffsetX) * nTileWidth;
 		float fTileOffsetY = (fOffsetY - (int)fOffsetY) * nTileHeight;
 
+		Clear(olc::CYAN);  // Clear screen
+
 		// Draw visible tiles
 		for (int x = -1; x < nVisibleTilesX + 1; x++) {
 			for (int y = nVisibleTilesY; y > -1 + 1; y--) { // reversed height drawing to fix edge case ghosting glitch
@@ -257,37 +261,43 @@ public:
 
 				case '#': // Ground
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
-						{ (float)nTileWidth * 0, 0 }, TileSize);
+						{ (float)nTileWidth * 0, (float)nTileWidth * 0 }, TileSize);
 					break;
 
 				case 'B': // Brick
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
-						{ (float)nTileWidth * 1, 0 }, TileSize);
+						{ (float)nTileWidth * 1, (float)nTileWidth * 0 }, TileSize);
 					break;
 
 				case 'o': // coin
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
-						{ (float)nTileWidth * 2, 0 }, TileSize);
+						{ (float)nTileWidth * 2, (float)nTileWidth * 0 }, TileSize);
 					break;
 
 				case '?': // ?box
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
-						{ (float)nTileWidth * 3, 0 }, TileSize);
+						{ (float)nTileWidth * 3, (float)nTileWidth * 0 }, TileSize);
 					break;
 
-				case 'l': // TODO: make level exit sprite
-					DrawRect({ (int)(x * nTileWidth - fTileOffsetX), (int)(y * nTileHeight - fTileOffsetY) }, { nTileWidth, nTileHeight }, olc::DARK_MAGENTA);
+				case 'l': // Portal top
+					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+						{ (float)nTileWidth * 4, (float)nTileWidth * 0 }, TileSize);
+					break;
+
+				case 'L': // Portal base
+					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+						{ (float)nTileWidth * 4, (float)nTileWidth * 1 }, TileSize);
 				default:
 					break;
 				}
 			}
 		}
 
-		// Draw player
+		
 		
 		olc::vi2d playerpos = { (int)((fPlayerPosX - fOffsetX) * nTileWidth), (int)((fPlayerPosY - fOffsetY) * nTileHeight) };
 		
-
+		// Find player direction
 		if (fPlayerVelX > 0) {
 			bPlayerDir = true;
 		}
@@ -296,13 +306,12 @@ public:
 		}
 
 		olc::vi2d offset = {bPlayerDir ? 16 : 0, bPlayerOnGround ? 0 : 16};
+		DrawPartialDecal(playerpos, TileSize, PlayerSprite->Decal(), offset, TileSize);  // Draw player
 
-		DrawPartialDecal(playerpos, TileSize, PlayerSprite->Decal(), offset, TileSize);
-
-		if (points == 1)
-			DrawString({ 1, 1 }, std::to_string(points) + " point");
+		if (nPoints == 1)
+			DrawString({ 1, 1 }, std::to_string(nPoints) + " point");
 		else
-			DrawString({ 1, 1 }, std::to_string(points) + " points");
+			DrawString({ 1, 1 }, std::to_string(nPoints) + " points");
 
 
 		if(bAdvanceLevel && bPlayerAlive)
@@ -323,7 +332,7 @@ public:
 		if (fDeathTimer >= 5.0f) {
 			// Restart after death
 			bPlayerAlive = true;
-			points = 0;
+			nPoints = nStartingPoints;
 			fDeathTimer = 0.0f;
 			LoadLevel("Start");
 		}
