@@ -77,7 +77,7 @@ public:
 	bool OnUserCreate() override
 	{
 		lvl::init();
-		LoadLevel("Debug");
+		LoadLevel("Start");
 
 		TileSheet = new olc::Renderable();
 		TileSheet->Load("assets/SpriteSheet.png");
