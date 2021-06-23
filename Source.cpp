@@ -122,7 +122,7 @@ public:
 			case 'L':
 				bAdvanceLevel = true;
 				break;
-			case 'x':  // Killbox
+			case 'x':  // Spikes
 				if(side != 't' && (fPlayerPosX > x - 0.75f && fPlayerPosX < x + 0.25))
 					KillPlayer();
 				break;
@@ -296,7 +296,7 @@ public:
 						{ (float)nTileWidth * 4, (float)nTileWidth * 1 }, TileSize);
 					break;
 
-				case 'x':
+				case 'x': // Spikes
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
 						{ (float)nTileWidth * 0, (float)nTileWidth * 1 }, TileSize);
 					break;
