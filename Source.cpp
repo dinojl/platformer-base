@@ -339,6 +339,7 @@ public:
 			}
 			if (nPoints <= 0) {
 				nPoints = nStartingPoints;
+				CurrentLevel.sID = "Start";
 				KillPlayer();
 			}
 		}
