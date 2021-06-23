@@ -48,7 +48,7 @@ private:
 	// jump vars + precomp
 	float fJumpTimer = 0.0;
 	float fJumpFloatTime = 0.1f;
-	float fJumpImpulse = 15.0f;
+	float fJumpImpulse = 10.0f;
 	float fJumpPower = fJumpImpulse / fJumpFloatTime;
 
 	olc::vi2d TileSize = { 16, 16 };
@@ -135,11 +135,11 @@ public:
 		bool bPlayerMoving = false;
 		if (IsFocused() && bPlayerAlive) {
 			if (GetKey(olc::LEFT).bHeld) {
-				fPlayerVelX += (bPlayerOnGround ? -10.0f : -4.0f) * fElapsedTime;
+				fPlayerVelX += (bPlayerOnGround ? -20.0f : -4.0f) * fElapsedTime;
 				bPlayerMoving = true;
 			}
 			if (GetKey(olc::RIGHT).bHeld) {
-				fPlayerVelX += (bPlayerOnGround ? 10.0f : 4.0f) * fElapsedTime;
+				fPlayerVelX += (bPlayerOnGround ? 20.0f : 4.0f) * fElapsedTime;
 				bPlayerMoving = true;
 			}
 			if (GetKey(olc::UP).bHeld) {
