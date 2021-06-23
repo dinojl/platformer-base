@@ -163,6 +163,9 @@ public:
 				fPlayerVelX = 0;
 		}
 
+		if (fPlayerPosY >= CurrentLevel.nHeight - 1 && bPlayerAlive)
+			KillPlayer();
+
 		fPlayerVelY += 20.0f * fElapsedTime;
 
 		if (fPlayerVelX > 10.0f)
@@ -282,7 +285,7 @@ public:
 						{ (float)nTileWidth * 3, (float)nTileWidth * 0 }, TileSize);
 					break;
 
-				case 'l': // Portal top TODO: lower portal top height
+				case 'l': // Portal top
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
 						{ (float)nTileWidth * 4, (float)nTileWidth * 0 }, TileSize);
 					break;
