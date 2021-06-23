@@ -123,7 +123,7 @@ public:
 				bAdvanceLevel = true;
 				break;
 			case 'x':  // Killbox
-				if(fNewPlayerPosY < x + 1 && (fPlayerPosX > x - 0.75f && fPlayerPosX < x + 0.25))
+				if(side != 't' && (fPlayerPosX > x - 0.75f && fPlayerPosX < x + 0.25))
 					KillPlayer();
 				break;
 			default:
