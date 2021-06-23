@@ -43,7 +43,8 @@ private:
 	float fPlayerVelY = 0.0f;
 
 	int nStartingPoints = 30;
-	int nPoints = nStartingPoints; // TODO: add countdown to loss based on score
+	int nPoints = nStartingPoints;
+	float fPointTimer = 0.0f;
 
 	// jump vars + precomp
 	float fJumpTimer = 0.0;
@@ -100,6 +101,11 @@ public:
 			if (x >= 0 && x < nLevelWidth && y >= 0 && y < nLevelHeight)
 				sLevel[y * nLevelWidth + x] = c;
 		};
+		auto KillPlayer = [&]() {
+			fPlayerVelY = -15;
+			fPlayerVelX = 0;
+			bPlayerAlive = false;
+		};
 		auto PickupHandler = [&](int x, int y, char side = ' ') {
 			switch (GetTile(x, y)) {
 			case 'o':  // Coin pickup
@@ -109,7 +115,7 @@ public:
 			case '?':  // ?box pickup
 				if (side == 't') {
 					SetTile(x, y, 'B');
-					nPoints += (rand() % 10 + 1) * 4;
+					nPoints += (rand() % 2 + 1) * 4;
 				}
 				break;
 			case 'l':  // Level advance
@@ -117,9 +123,7 @@ public:
 				bAdvanceLevel = true;
 				break;
 			case 'x':  // Killbox
-				bPlayerAlive = false;
-				fPlayerVelY = -15;
-				fPlayerVelX = 0;
+				KillPlayer();
 				break;
 			default:
 				break;
@@ -153,14 +157,13 @@ public:
 			}
 		}
 
-		fPlayerVelY += 20.0f * fElapsedTime;
-
 		if (bPlayerOnGround) {
 			fPlayerVelX += -3.0f * fPlayerVelX * fElapsedTime;
 			if (!bPlayerMoving && (fabs(fPlayerVelX) < 0.1f)) // stops if no input and too slow
 				fPlayerVelX = 0;
 		}
 
+		fPlayerVelY += 20.0f * fElapsedTime;
 
 		if (fPlayerVelX > 10.0f)
 			fPlayerVelX = 10.0f;
@@ -279,7 +282,7 @@ public:
 						{ (float)nTileWidth * 3, (float)nTileWidth * 0 }, TileSize);
 					break;
 
-				case 'l': // Portal top
+				case 'l': // Portal top TODO: lower portal top height
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
 						{ (float)nTileWidth * 4, (float)nTileWidth * 0 }, TileSize);
 					break;
@@ -308,22 +311,38 @@ public:
 		olc::vi2d offset = {bPlayerDir ? 16 : 0, bPlayerOnGround ? 0 : 16};
 		DrawPartialDecal(playerpos, TileSize, PlayerSprite->Decal(), offset, TileSize);  // Draw player
 
+		// Draw point counter
+		DrawStringDecal({ 1.0f, 1.0f }, std::to_string(nPoints));
 		if (nPoints == 1)
-			DrawString({ 1, 1 }, std::to_string(nPoints) + " point");
+			DrawStringPropDecal({ (float)(std::to_string(nPoints).length() + 1) * 8 - 4, 1.0f }, " point");
 		else
-			DrawString({ 1, 1 }, std::to_string(nPoints) + " points");
+			DrawStringPropDecal({ (float)(std::to_string(nPoints).length() + 1) * 8 - 4, 1.0f }, " points");
 
 
 		if(bAdvanceLevel && bPlayerAlive)
 			LoadLevel(CurrentLevel.sNextLevelID);
 		
+
+		if (bPlayerAlive) {  // Handle point timer
+			fPointTimer += fElapsedTime;
+			if (fPointTimer >= 1) {
+				nPoints--;
+				fPointTimer--;
+			}
+			if (nPoints <= 0) {
+				KillPlayer();
+			}
+		}
+
 		if (!bPlayerAlive) {
 			// Draw game over box
-			FillRect({ ScreenWidth() / 4, ScreenHeight() / 4 }, { ScreenWidth() / 2, ScreenHeight() / 2 }, olc::GREY);
-			DrawRect({ ScreenWidth() / 4, ScreenHeight() / 4 }, { ScreenWidth() / 2, ScreenHeight() / 2 }, olc::BLACK);
+			FillRectDecal({ (float)ScreenWidth() / 4, (float)ScreenHeight() / 4 }, { (float)ScreenWidth() / 2, (float)ScreenHeight() / 2 }, olc::BLACK);
+			FillRectDecal({ (float)ScreenWidth() / 4 + 1, (float)ScreenHeight() / 4 + 1 }, { (float)ScreenWidth() / 2 - 2, (float)ScreenHeight() / 2 - 2 }, olc::GREY);
 
-			DrawString({ ScreenWidth() / 2 - 36, ScreenHeight() / 2 - 4 }, "Game Over", olc::BLACK);
-			DrawString({ ScreenWidth() / 2 - 4, ScreenHeight() / 2 + 5 }, std::to_string(5 - (int)(fDeathTimer)), olc::BLACK);
+			std::string p = "Game Over";
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 - 4 }, p, olc::BLACK);
+			p = std::to_string(5 - (int)(fDeathTimer));
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 5 }, p, olc::BLACK);
 
 			// Start game over timer
 			fDeathTimer += fElapsedTime;
@@ -331,9 +350,10 @@ public:
 
 		if (fDeathTimer >= 5.0f) {
 			// Restart after death
-			bPlayerAlive = true;
+			fPointTimer = 0;
 			nPoints = nStartingPoints;
 			fDeathTimer = 0.0f;
+			bPlayerAlive = true;
 			LoadLevel("Start");
 		}
 
