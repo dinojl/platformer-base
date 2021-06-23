@@ -248,7 +248,7 @@ public:
 
 		// Draw visible tiles
 		for (int x = -1; x < nVisibleTilesX + 1; x++) {
-			for (int y = nVisibleTilesY; y > -1 + 1; y--) { // reversed height drawing to fix edge case ghosting glitch
+			for (int y = -1; y < nVisibleTilesY + 1; y++) {
 
 				char sTileID = GetTile(x + fOffsetX, y + fOffsetY);
 
