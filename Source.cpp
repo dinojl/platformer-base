@@ -5,7 +5,6 @@
 
 
 
-// TODO: add death traps
 
 class Example : public olc::PixelGameEngine
 {
@@ -153,9 +152,6 @@ public:
 			}
 			else
 				fJumpTimer = 0.0f;  // reset jump timer
-			if (GetKey(olc::F3).bPressed && GetKey(olc::CTRL).bHeld) { // dumbass cheat code TODO: remove before release
-				nPoints = 69420;
-			}
 		}
 
 		if (bPlayerOnGround) {
