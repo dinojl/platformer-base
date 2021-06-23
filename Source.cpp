@@ -160,7 +160,7 @@ public:
 				fPlayerVelX = 0;
 		}
 
-		if (fPlayerPosY >= CurrentLevel.nHeight - 1 && bPlayerAlive)
+		if (fPlayerPosY >= CurrentLevel.nHeight - 1 && bPlayerAlive && CurrentLevel.nHeight > 0)
 			KillPlayer();
 
 		fPlayerVelY += 20.0f * fElapsedTime;
