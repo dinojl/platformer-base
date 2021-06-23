@@ -61,6 +61,7 @@ private:
 	void LoadLevel(std::string ID) {
 		lvl::Level lvl = Manifest[ID];
 		CurrentLevel = lvl;
+		CurrentLevel.sID = ID;
 		sLevel = lvl.sMap;
 		nLevelWidth = lvl.nWidth;
 		nLevelHeight = lvl.nHeight;
@@ -114,7 +115,7 @@ public:
 			case '?':  // ?box pickup
 				if (side == 't') {
 					SetTile(x, y, 'B');
-					nPoints += (rand() % 2 + 1) * 4;
+					nPoints += (rand() % 4 + 1) * 4;
 				}
 				break;
 			case 'l':  // Level advance
@@ -337,6 +338,7 @@ public:
 				fPointTimer--;
 			}
 			if (nPoints <= 0) {
+				nPoints = nStartingPoints;
 				KillPlayer();
 			}
 		}
@@ -358,10 +360,9 @@ public:
 		if (fDeathTimer >= 5.0f) {
 			// Restart after death
 			fPointTimer = 0;
-			nPoints = nStartingPoints;
 			fDeathTimer = 0.0f;
 			bPlayerAlive = true;
-			LoadLevel("Start");
+			LoadLevel(CurrentLevel.sID);
 		}
 
 		return true;
