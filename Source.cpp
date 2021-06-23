@@ -78,7 +78,7 @@ public:
 	bool OnUserCreate() override
 	{
 		lvl::init();
-		LoadLevel("Start");
+		LoadLevel("Debug");
 
 		TileSheet = new olc::Renderable();
 		TileSheet->Load("assets/SpriteSheet.png");
@@ -123,7 +123,8 @@ public:
 				bAdvanceLevel = true;
 				break;
 			case 'x':  // Killbox
-				KillPlayer();
+				if(fNewPlayerPosY < x + 1 && (fPlayerPosX > x - 0.75f && fPlayerPosX < x + 0.25))
+					KillPlayer();
 				break;
 			default:
 				break;
@@ -293,6 +294,13 @@ public:
 				case 'L': // Portal base
 					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
 						{ (float)nTileWidth * 4, (float)nTileWidth * 1 }, TileSize);
+					break;
+
+				case 'x':
+					DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+						{ (float)nTileWidth * 0, (float)nTileWidth * 1 }, TileSize);
+					break;
+
 				default:
 					break;
 				}
@@ -339,13 +347,13 @@ public:
 
 		if (!bPlayerAlive) {
 			// Draw game over box
-			FillRectDecal({ (float)ScreenWidth() / 4, (float)ScreenHeight() / 4 }, { (float)ScreenWidth() / 2, (float)ScreenHeight() / 2 }, olc::BLACK);
-			FillRectDecal({ (float)ScreenWidth() / 4 + 1, (float)ScreenHeight() / 4 + 1 }, { (float)ScreenWidth() / 2 - 2, (float)ScreenHeight() / 2 - 2 }, olc::GREY);
+			FillRectDecal({ (float)ScreenWidth() / 4, (float)ScreenHeight() / 8 * 3 }, { (float)ScreenWidth() / 2, (float)ScreenHeight() / 4 }, olc::BLACK);
+			FillRectDecal({ (float)ScreenWidth() / 4 + 1, (float)ScreenHeight() / 8 * 3 + 1 }, { (float)ScreenWidth() / 2 - 2, (float)ScreenHeight() / 4 - 2 }, olc::GREY);
 
 			std::string p = "Game Over";
-			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 - 4 }, p, olc::BLACK);
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 - 8 }, p, olc::BLACK);
 			p = std::to_string(5 - (int)(fDeathTimer));
-			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 5 }, p, olc::BLACK);
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 1 }, p, olc::BLACK);
 
 			// Start game over timer
 			fDeathTimer += fElapsedTime;
