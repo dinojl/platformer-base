@@ -256,7 +256,7 @@ public:
 
 				switch (sTileID) {
 				case '.': // Sky
-					FillRect(x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY, nTileWidth, nTileHeight, olc::CYAN);
+					//FillRect(x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY, nTileWidth, nTileHeight, olc::CYAN); //Old, slow method
 					break;
 
 				case '#': // Ground
