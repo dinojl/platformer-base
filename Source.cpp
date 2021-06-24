@@ -4,7 +4,9 @@
 #include "Levels.h"
 
 
-
+// TODO: win screen
+// TODO: make some good levels
+// TODO: Lives system
 
 class Example : public olc::PixelGameEngine
 {
