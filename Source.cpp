@@ -6,7 +6,7 @@
 
 // TODO: win screen
 // TODO: make some good levels
-// TODO: Lives system
+// TODO: Add life item
 
 class Example : public olc::PixelGameEngine
 {
@@ -46,6 +46,8 @@ private:
 	int nStartingPoints = 30;
 	int nPoints = nStartingPoints;
 	float fPointTimer = 0.0f;
+
+	int nLives = 5;
 
 	// jump vars + precomp
 	float fJumpTimer = 0.0;
@@ -328,6 +330,8 @@ public:
 		else
 			DrawStringPropDecal({ (float)(std::to_string(nPoints).length() + 1) * 8 - 4, 1.0f }, " points");
 
+		DrawStringDecal({(float)ScreenWidth() - (8*7), 1.0f}, std::to_string(nLives) + " Lives");
+
 
 		if(bAdvanceLevel && bPlayerAlive)
 			LoadLevel(CurrentLevel.sNextLevelID);
@@ -351,7 +355,11 @@ public:
 			FillRectDecal({ (float)ScreenWidth() / 4, (float)ScreenHeight() / 8 * 3 }, { (float)ScreenWidth() / 2, (float)ScreenHeight() / 4 }, olc::BLACK);
 			FillRectDecal({ (float)ScreenWidth() / 4 + 1, (float)ScreenHeight() / 8 * 3 + 1 }, { (float)ScreenWidth() / 2 - 2, (float)ScreenHeight() / 4 - 2 }, olc::GREY);
 
-			std::string p = "Game Over";
+			std::string p;
+			if (nLives > 0)
+				p = "Respawning...";
+			else
+				p = "Game Over";
 			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 - 8 }, p, olc::BLACK);
 			p = std::to_string(5 - (int)(fDeathTimer));
 			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 1 }, p, olc::BLACK);
@@ -365,7 +373,16 @@ public:
 			fPointTimer = 0;
 			fDeathTimer = 0.0f;
 			bPlayerAlive = true;
-			LoadLevel(CurrentLevel.sID);
+			if (nLives > 0) { //Respawn
+				LoadLevel(CurrentLevel.sID);
+				nLives--;
+			}
+			else { //Game over
+				nLives = 5;
+				nPoints = nStartingPoints;
+				LoadLevel("Start");
+			}
+
 		}
 
 		return true;
