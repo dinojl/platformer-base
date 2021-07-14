@@ -5,7 +5,7 @@
 
 
 // TODO: make some good levels
-// TODO: Add life item
+// TODO: Add sfx
 
 class Example : public olc::PixelGameEngine
 {
@@ -136,6 +136,10 @@ public:
 			case 'e':
 			case 'E':
 				bGameWon = true;
+				break;
+			case 'p':
+				SetTile(x, y, '.');
+				nLives++;
 				break;
 			default:
 				break;
@@ -339,6 +343,11 @@ public:
 					case 'e': // End top
 						DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
 							{ (float)nTileWidth * 4, (float)nTileWidth * 0 }, TileSize, olc::GREEN);
+						break;
+
+					case 'p': // Potion
+						DrawPartialDecal({ x * nTileWidth - fTileOffsetX, y * nTileHeight - fTileOffsetY }, TileSize, TileSheet->Decal(),
+							{ (float)nTileWidth * 1, (float)nTileWidth * 1 }, TileSize);
 						break;
 
 					default:
