@@ -6,6 +6,7 @@
 
 // TODO: make some good levels
 // TODO: Add sfx
+// TODO: Start screen
 
 class Example : public olc::PixelGameEngine
 {
@@ -46,7 +47,8 @@ private:
 	int nPoints = nStartingPoints;
 	float fPointTimer = 0.0f;
 
-	int nLives = 5;
+	int nStartingLives = 5;
+	int nLives = nStartingLives;
 
 	bool bGameWon = false;
 
@@ -426,7 +428,7 @@ public:
 					nLives--;
 				}
 				else { //Game over
-					nLives = 5;
+					nLives = nStartingLives;
 					nPoints = nStartingPoints;
 					LoadLevel("Start");
 				}
