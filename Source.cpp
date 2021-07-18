@@ -6,7 +6,6 @@
 
 // TODO: make some good levels
 // TODO: Add sfx
-// TODO: Start screen
 
 class Example : public olc::PixelGameEngine
 {
@@ -51,6 +50,7 @@ private:
 	int nLives = nStartingLives;
 
 	bool bGameWon = false;
+	bool bGameStart = true;
 
 	// jump vars + precomp
 	float fJumpTimer = 0.0;
@@ -166,6 +166,34 @@ public:
 			p = "Your final score is " + std::to_string(nPoints + 10 * nLives);
 			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 24 }, p, olc::BLACK);
 
+		}
+
+		else if (bGameStart) {
+			Clear(olc::CYAN);
+
+			// Draw some ground
+			int nVisibleTilesX = ScreenWidth() / nTileWidth;
+			int nVisibleTilesY = ScreenHeight() / nTileHeight;
+			for (int x = -1; x < nVisibleTilesX + 1; x++) {
+				for (int y = -1; y < nVisibleTilesY + 1; y++) {
+					if (y > nVisibleTilesY / 4 * 3) {
+						DrawPartialDecal({ (float)x * nTileWidth, (float)y * nTileHeight }, TileSize, TileSheet->Decal(),
+							{ (float)nTileWidth * 0, (float)nTileWidth * 0 }, TileSize);
+					}
+				}
+			}
+
+			std::string p = "Platformer Demo";
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x, (float)ScreenHeight() / 4 }, p, olc::BLACK, { 2.0f, 2.0f });
+
+			p = "Use arrow keys to control";
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 - 8 }, p, olc::BLACK);
+
+			p = "Press right to begin";
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 8 }, p, olc::BLACK);
+
+			if (GetKey(olc::RIGHT).bPressed)
+				bGameStart = false;
 		}
 
 		else {
