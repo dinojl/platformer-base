@@ -1,11 +1,12 @@
 #define OLC_PGE_APPLICATION
+#define OLC_PGEX_SOUND
 #include "olcPixelGameEngine.h"
+#include "olcPGEX_Sound.h"
 
 #include "Levels.h"
 
 
 // TODO: make some good levels
-// TODO: Add sfx
 
 class Example : public olc::PixelGameEngine
 {
@@ -52,6 +53,17 @@ private:
 	bool bGameWon = false;
 	bool bGameStart = true;
 
+
+	// Sound stuff
+	const static bool bEnableSound = true;
+
+	const static int sfxNum = 5; // # of sfx
+	int sfx[sfxNum];
+	int sfxMusic;
+	float sfxMusicTimer = 0;
+	bool bFirstLoop = true;
+
+
 	// jump vars + precomp
 	float fJumpTimer = 0.0;
 	float fJumpFloatTime = 0.1f;
@@ -92,6 +104,18 @@ public:
 		PlayerSprite = new olc::Renderable();
 		PlayerSprite->Load("assets/PlayerSprite.png");
 
+		// sfx init
+		if (bEnableSound)
+			olc::SOUND::InitialiseAudio();
+
+		sfx[0] = olc::SOUND::LoadAudioSample("assets/Pickup_Coin.wav");
+		sfx[1] = olc::SOUND::LoadAudioSample("assets/Jump.wav");
+		sfx[2] = olc::SOUND::LoadAudioSample("assets/Death.wav");
+		sfx[3] = olc::SOUND::LoadAudioSample("assets/Pickup_Potion.wav");
+		sfx[4] = olc::SOUND::LoadAudioSample("assets/Pickup_Qbox.wav");
+
+		sfxMusic = olc::SOUND::LoadAudioSample("assets/BGmusic.wav");
+
 		return true;
 	}
 
@@ -114,17 +138,20 @@ public:
 			fPlayerVelY = -15;
 			fPlayerVelX = 0;
 			bPlayerAlive = false;
+			olc::SOUND::PlaySample(sfx[2]);
 		};
 		auto PickupHandler = [&](int x, int y, char side = ' ') {
 			switch (GetTile(x, y)) {
 			case 'o':  // Coin pickup
 				SetTile(x, y, '.');
 				nPoints += 5;
+				olc::SOUND::PlaySample(sfx[0]);
 				break;
 			case '?':  // ?box pickup
 				if (side == 't') {
 					SetTile(x, y, 'B');
 					nPoints += (rand() % 4 + 1) * 4;
+					olc::SOUND::PlaySample(sfx[4]);
 				}
 				break;
 			case 'l':  // Level advance
@@ -142,6 +169,7 @@ public:
 			case 'p':
 				SetTile(x, y, '.');
 				nLives++;
+				olc::SOUND::PlaySample(sfx[3]);
 				break;
 			default:
 				break;
@@ -220,6 +248,8 @@ public:
 				}
 				else
 					fJumpTimer = 0.0f;  // reset jump timer
+				if (GetKey(olc::UP).bHeld && bPlayerOnGround)
+					olc::SOUND::PlaySample(sfx[1]);
 			}
 
 			if (bPlayerOnGround) {
@@ -464,7 +494,13 @@ public:
 			}
 		}
 
+		if (sfxMusicTimer >= 35.157f || bFirstLoop) {
+			olc::SOUND::PlaySample(sfxMusic);
+			bFirstLoop = false;
+			sfxMusicTimer = 0.0f;
+		}
 
+		sfxMusicTimer += fElapsedTime;
 
 		return true;
 	}

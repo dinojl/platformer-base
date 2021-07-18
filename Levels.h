@@ -94,8 +94,8 @@ namespace lvl {
 			"##########..............................BBBBBBBBBxxxxxxxBBBBBBBB"
 			"#########......o......................xxBBBBBBBBBBBBBBBBBBBBBBBB"
 			"##########....ooo....................xBBBBBBBBBBBBBBBBBBBBBBBBBB"
-			"###########..ooooo...............o.xxBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-			"####################............BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"), 64, 24, 1, 1)));
+			"###########..oopoo...............o.xxBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+			"####################...........bBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"), 64, 24, 1, 1)));
 
 
 
