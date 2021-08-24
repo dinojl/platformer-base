@@ -78,6 +78,8 @@ private:
 	olc::Renderable* PlayerSprite = nullptr;
 
 	void LoadLevel(std::string ID) {
+		if (ID == "")
+			return;
 		lvl::Level lvl = Manifest[ID];
 		CurrentLevel = lvl;
 		CurrentLevel.sID = ID;
@@ -314,9 +316,12 @@ public:
 				}
 			}
 
-			if (fNewPlayerPosX < 0.0f) { // resolves small oob bug on left border
+			if (fNewPlayerPosX < 0.0f) { // resolves small oob bug on left & top borders
 				fNewPlayerPosX = 0.0f;
 				fPlayerVelX = 0.0f;
+			}
+			if (fNewPlayerPosY < 0.0f) {
+				fNewPlayerPosY = 0.0f;
 			}
 
 			fPlayerPosX = fNewPlayerPosX;
