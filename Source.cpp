@@ -22,7 +22,7 @@ private:
 	std::map<std::string, lvl::Level> Manifest = lvl::init();
 	bool bAdvanceLevel = false;
 
-	std::string sLevel;
+	char* cLevel;
 	int nLevelWidth;
 	int nLevelHeight;
 
@@ -83,7 +83,7 @@ private:
 		lvl::Level lvl = Manifest[ID];
 		CurrentLevel = lvl;
 		CurrentLevel.sID = ID;
-		sLevel = lvl.sMap;
+		cLevel = lvl.cMap;
 		nLevelWidth = lvl.nWidth;
 		nLevelHeight = lvl.nHeight;
 		fPlayerVelX = 0.0f;
@@ -126,13 +126,13 @@ public:
 		// Utility lambdas
 		auto GetTile = [&](int x, int y) {
 			if (x >= 0 && x < nLevelWidth && y >= 0 && y < nLevelHeight)
-				return sLevel[y * nLevelWidth + x];
+				return cLevel[y * nLevelWidth + x];
 			else
 				return ' ';
 		};
 		auto SetTile = [&](int x, int y, char c) {
 			if (x >= 0 && x < nLevelWidth && y >= 0 && y < nLevelHeight)
-				sLevel[y * nLevelWidth + x] = c;
+				cLevel[y * nLevelWidth + x] = c;
 		};
 		auto KillPlayer = [&]() {
 			if (bGameWon)

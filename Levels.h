@@ -3,7 +3,24 @@
 namespace lvl {
 	struct Level {
 		Level(std::string Map, int Width, int Height, int PlayerX = 0, int PlayerY = 0, std::string NextLevelID = "", bool PlayerDir = true) {
-			sMap = Map;
+
+
+			// Dynamically allocate memory for map
+			char* temp = new char[Width * Height];
+			memset(temp, 0, Width * Height * sizeof(char));
+			
+
+			// Convert string into 2d array
+			for (int y = 0; y < Height; y++) {
+				for (int x = 0; x < Width; x++) {
+					char c = Map[y * Width + x];
+					temp[y * Width + x] = c;
+				}
+			}
+
+			cMap = temp;
+
+			// Assign other constants
 			nWidth = Width;
 			nHeight = Height;
 			nPlayerX = PlayerX;
@@ -11,8 +28,10 @@ namespace lvl {
 			bPlayerDir = PlayerDir;
 			sNextLevelID = NextLevelID;
 		}
+
 		Level() {}
-		std::string sMap = "";
+
+		char* cMap = nullptr;
 		int nWidth = 0;
 		int nHeight = 0;
 		int nPlayerX = 0;
