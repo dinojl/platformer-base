@@ -16,6 +16,10 @@ public:
 		sAppName = "Platformer Example";
 	}
 
+	~Example() {
+		olc::SOUND::DestroyAudio();  // Shut down audio player
+	}
+
 private:
 
 	lvl::Level CurrentLevel;
@@ -61,7 +65,6 @@ private:
 	int sfx[sfxNum];
 	int sfxMusic;
 	float sfxMusicTimer = 0;
-	bool bFirstLoop = true;
 
 
 	// jump vars + precomp
@@ -117,6 +120,8 @@ public:
 		sfx[4] = olc::SOUND::LoadAudioSample("assets/Pickup_Qbox.wav");
 
 		sfxMusic = olc::SOUND::LoadAudioSample("assets/BGmusic.wav");
+
+		olc::SOUND::PlaySample(sfxMusic);
 
 		return true;
 	}
@@ -499,9 +504,8 @@ public:
 			}
 		}
 
-		if (sfxMusicTimer >= 35.157f || bFirstLoop) {
+		if (sfxMusicTimer >= 35.157f) {
 			olc::SOUND::PlaySample(sfxMusic);
-			bFirstLoop = false;
 			sfxMusicTimer = 0.0f;
 		}
 
