@@ -1,4 +1,6 @@
-#pragma once
+#include <string>
+#include <cstring>
+#include <map>
 
 namespace lvl {
 	struct Level {

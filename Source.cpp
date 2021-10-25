@@ -8,7 +8,7 @@
 #include "olcPGEX_Sound.h"
 #endif //SOUNDENABLE
 
-#include "Levels.h"
+#include "Levels.cpp"
 
 // TODO: make some good levels
 
