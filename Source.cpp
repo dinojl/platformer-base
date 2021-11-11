@@ -1,5 +1,5 @@
 #define OLC_PGE_APPLICATION
-//#define SOUNDENABLE
+#define SOUNDENABLE
 
 #include "olcPixelGameEngine.h"
 
