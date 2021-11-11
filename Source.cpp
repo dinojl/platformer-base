@@ -1,5 +1,5 @@
 #define OLC_PGE_APPLICATION
-#define SOUNDENABLE
+//#define SOUNDENABLE
 
 #include "olcPixelGameEngine.h"
 
@@ -53,8 +53,10 @@ private:
 	float fPlayerVelX = 0.0f;
 	float fPlayerVelY = 0.0f;
 
-	int nStartingPoints = 30;
-	int nPoints = nStartingPoints;
+	int nStartingTime = 30;
+	int nGameTimer = nStartingTime;
+
+	int nPoints = 0;
 	float fPointTimer = 0.0f;
 
 	int nStartingLives = 5;
@@ -156,6 +158,7 @@ public:
 				return;
 			fPlayerVelY = -15;
 			fPlayerVelX = 0;
+			nGameTimer = nStartingTime;
 			bPlayerAlive = false;
 			PlaySound(2);
 		};
@@ -164,12 +167,15 @@ public:
 			case 'o':  // Coin pickup
 				SetTile(x, y, '.');
 				nPoints += 5;
+				nGameTimer += 5;
 				PlaySound(0);
 				break;
 			case '?':  // ?box pickup
 				if (side == 't') {
 					SetTile(x, y, 'B');
-					nPoints += (rand() % 4 + 1) * 4;
+					x = (rand() % 4 + 1) * 4;
+					nPoints += x;
+					nGameTimer += x;
 					PlaySound(4);
 				}
 				break;
@@ -211,8 +217,11 @@ public:
 			p = std::to_string(nLives) + " lives remain";
 			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 8 }, p, olc::BLACK);
 
-			p = "Your final score is " + std::to_string(nPoints + 10 * nLives);
-			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 24 }, p, olc::BLACK);
+			p = std::to_string(nGameTimer) + " seconds remain";
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 17 }, p, olc::BLACK);
+
+			p = "Your final score is " + std::to_string(nPoints + nGameTimer + 10 * nLives);
+			DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 26 }, p, olc::BLACK);
 
 		}
 
@@ -460,22 +469,37 @@ public:
 				DrawStringPropDecal({ (float)(std::to_string(nPoints).length() + 1) * 8 - 4, 1.0f }, " point");
 			else
 				DrawStringPropDecal({ (float)(std::to_string(nPoints).length() + 1) * 8 - 4, 1.0f }, " points");
+			
+			// Draw timer	
+			DrawStringDecal({ 1.0f, 10.0f }, std::to_string(nGameTimer));
+			if (nGameTimer == 1)
+				DrawStringPropDecal({ (float)(std::to_string(nGameTimer).length() + 1) * 8 - 4, 10.0f }, " second");
+			else
+				DrawStringPropDecal({ (float)(std::to_string(nGameTimer).length() + 1) * 8 - 4, 10.0f }, " seconds");
+
+
 
 			DrawStringDecal({ (float)ScreenWidth() - (8 * 7), 1.0f }, std::to_string(nLives) + " Lives");
 
+			
 
-			if (bAdvanceLevel && bPlayerAlive)
+			// Advance level
+			// TODO: Fix time reset on level advance
+			if (bAdvanceLevel && bPlayerAlive) {
 				LoadLevel(CurrentLevel.sNextLevelID);
+				//nPoints += nGameTimer;
+				//nGameTimer = 0;
+			}
 
 
 			if (bPlayerAlive && !bGameWon) {  // Handle point timer
 				fPointTimer += fElapsedTime;
 				if (fPointTimer >= 1) {
-					nPoints--;
+					nGameTimer--;
 					fPointTimer--;
 				}
-				if (nPoints <= 0) {
-					nPoints = nStartingPoints;
+				if (nGameTimer <= 0) { 
+					nPoints = 0;
 					CurrentLevel.sID = "Start";
 					KillPlayer();
 				}
@@ -483,8 +507,10 @@ public:
 
 			if (!bPlayerAlive) {
 				// Draw game over box
-				FillRectDecal({ (float)ScreenWidth() / 4, (float)ScreenHeight() / 8 * 3 }, { (float)ScreenWidth() / 2, (float)ScreenHeight() / 4 }, olc::BLACK);
-				FillRectDecal({ (float)ScreenWidth() / 4 + 1, (float)ScreenHeight() / 8 * 3 + 1 }, { (float)ScreenWidth() / 2 - 2, (float)ScreenHeight() / 4 - 2 }, olc::GREY);
+				FillRectDecal({ (float)ScreenWidth() / 4, (float)ScreenHeight() / 8 * 3 }, { (float)ScreenWidth() / 2,
+					(float)ScreenHeight() / 4 }, olc::BLACK);
+				FillRectDecal({ (float)ScreenWidth() / 4 + 1, (float)ScreenHeight() / 8 * 3 + 1 }, { (float)ScreenWidth() / 2 - 2,
+					(float)ScreenHeight() / 4 - 2 }, olc::GREY);
 
 				std::string p;
 				if (nLives > 0)
@@ -506,11 +532,12 @@ public:
 				bPlayerAlive = true;
 				if (nLives > 0) { //Respawn
 					LoadLevel(CurrentLevel.sID);
+					nGameTimer = nStartingTime;
 					nLives--;
 				}
 				else { //Game over
 					nLives = nStartingLives;
-					nPoints = nStartingPoints;
+					nPoints = 0;
 					LoadLevel("Start");
 				}
 
