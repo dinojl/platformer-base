@@ -61,6 +61,7 @@ private:
 
 	int nStartingLives = 5;
 	int nLives = nStartingLives;
+	const float fRespawnTime = 3.0f;
 
 	bool bGameWon = false;
 	bool bGameStart = true;
@@ -518,14 +519,14 @@ public:
 				else
 					p = "Game Over";
 				DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 - 8 }, p, olc::BLACK);
-				p = std::to_string(5 - (int)(fDeathTimer));
+				p = std::to_string((int)(fRespawnTime)  - (int)(fDeathTimer));
 				DrawStringPropDecal({ (float)ScreenWidth() / 2 - (float)GetTextSizeProp(p).x / 2, (float)ScreenHeight() / 2 + 1 }, p, olc::BLACK);
 
 				// Start game over timer
 				fDeathTimer += fElapsedTime;
 			}
 
-			if (fDeathTimer >= 5.0f) {
+			if (fDeathTimer >= fRespawnTime) {
 				// Restart after death
 				fPointTimer = 0;
 				fDeathTimer = 0.0f;
